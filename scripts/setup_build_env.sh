@@ -20,6 +20,10 @@ set -o xtrace
 set -o errexit
 set -o pipefail
 
+readonly INSTALL_PREFIX="/tmp/brella_local$$"
+mkdir --parents "${INSTALL_PREFIX}/bin"
+mkdir --parents "${INSTALL_PREFIX}/include"
+
 # Download a artifact and verify its hash against an expected value.
 download_and_verify_hash() {
   # Parameter validation
@@ -66,26 +70,31 @@ rustup target add x86_64-unknown-none
 
 # Install bazelisk/bazel.
 if ! command -v bazelisk >/dev/null 2>&1; then
-  bazelisk_exe="/tmp/bazelisk$$"
+  need_path=yes
+  bazelisk_exe="${INSTALL_PREFIX}/bin/bazelisk"
   download_and_verify_hash \
-    "https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64" \
+    https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
     "${bazelisk_exe}" \
-    "d28b588ac0916abd6bf02defb5433f6eddf7cba35ffa808eabb65a44aab226f7"
-  mv "${bazelisk_exe}" /usr/bin/bazelisk
-  chmod +x /usr/bin/bazelisk
+    d28b588ac0916abd6bf02defb5433f6eddf7cba35ffa808eabb65a44aab226f7
+  chmod +x "${bazelisk_exe}"
 fi
 
 # Install protoc.
 if ! command -v protoc >/dev/null 2>&1; then
+  need_path=yes
   protoc_zip="/tmp/protoc$$.zip"
   download_and_verify_hash \
     https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip \
     "${protoc_zip}" \
     78ab9c3288919bdaa6cfcec6127a04813cf8a0ce406afa625e48e816abee2878
   # Install instructions from https://google.github.io/proto-lens/installing-protoc.html.
-  unzip -o "${protoc_zip}" -d /usr/local bin/protoc
-  unzip -o "${protoc_zip}" -d /usr/local 'include/*'
+  unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" bin/protoc
+  unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" 'include/*'
   rm "${protoc_zip}"
+fi
+
+if [ -n "${need_path}" ]; then
+  export PATH="${INSTALL_PREFIX}/bin:${PATH}"
 fi
 
 if [ -n "${GITHUB_ACTION}" ]; then
