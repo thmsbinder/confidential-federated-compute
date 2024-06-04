@@ -48,13 +48,6 @@ jobs:
       - name: Mount main branch
         uses: actions/checkout@v4
 
-      - name: Configure Rust
-        run: |
-          rustup default nightly-2023-11-15
-          rustup target add x86_64-unknown-none
-          sudo apt-get update
-          sudo apt-get install protobuf-compiler
-
       # Keeps two versions of SUBJECT_PATHS, with space resp. comma as
       # path separator. Both are needed in later steps.
       - name: Parse buildconfig
