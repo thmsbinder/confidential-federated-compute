@@ -66,24 +66,26 @@ rustup target add x86_64-unknown-none
 
 # Install bazelisk/bazel.
 if ! command -v bazelisk >/dev/null 2>&1; then
+  bazelisk_exe="/tmp/bazelisk$$"
   download_and_verify_hash \
     "https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64" \
-    "/tmp/bazelisk" \
+    "${bazelisk_exe}" \
     "d28b588ac0916abd6bf02defb5433f6eddf7cba35ffa808eabb65a44aab226f7"
-  mv "/tmp/bazelisk" "/usr/bin"
-  chmod +x "/usr/bin/bazelisk"
+  mv "${bazelisk_exe}" /usr/bin/bazelisk
+  chmod +x /usr/bin/bazelisk
 fi
 
 # Install protoc.
 if ! command -v protoc >/dev/null 2>&1; then
+  protoc_zip="/tmp/protoc$$.zip"
   download_and_verify_hash \
-    "https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip" \
-    "/tmp/protoc.zip" \
-    "78ab9c3288919bdaa6cfcec6127a04813cf8a0ce406afa625e48e816abee2878"
+    https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip \
+    "${protoc_zip}" \
+    78ab9c3288919bdaa6cfcec6127a04813cf8a0ce406afa625e48e816abee2878
   # Install instructions from https://google.github.io/proto-lens/installing-protoc.html.
-  unzip -o "/tmp/protoc.zip" -d /usr/local bin/protoc
-  unzip -o "/tmp/protoc.zip" -d /usr/local 'include/*'
-  rm "/tmp/protoc.zip"
+  unzip -o "${protoc_zip}" -d /usr/local bin/protoc
+  unzip -o "${protoc_zip}" -d /usr/local 'include/*'
+  rm "${protoc_zip}"
 fi
 
 if [ -n "${GITHUB_ACTION}" ]; then
