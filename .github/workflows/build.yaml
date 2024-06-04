@@ -73,7 +73,6 @@ jobs:
           echo "subject_paths_commas: ${{ steps.parse.outputs.subject-paths-commas }}"
           echo "GITHUB_SHA: ${GITHUB_SHA}"
 
-      # Needs testing
       - name: Build
         id: build
         run: |
@@ -81,6 +80,7 @@ jobs:
           set -o nounset
           set -o pipefail
           source ${{ matrix.buildconfig }}
+          export RUST_BACKTRACE=1
           eval "${BUILD_COMMAND[@]}"
 
       - name: Show build artifacts

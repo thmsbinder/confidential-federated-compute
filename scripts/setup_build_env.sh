@@ -24,10 +24,10 @@ readonly INSTALL_PREFIX="/usr/local"
 sudo mkdir --parents "${INSTALL_PREFIX}/{bin,include}"
 
 # Download a artifact and verify its hash against an expected value.
-download_and_verify_hash() {
+download_and_verify() {
   # Parameter validation
   if [[ $# -ne 3 ]]; then
-    echo "Usage: download_and_verify_hash <URL> <OUTPUT_PATH> <EXPECTED_SHA256>" >&2
+    echo "Usage: download_and_verify <URL> <OUTPUT_PATH> <EXPECTED_SHA256>" >&2
     return 1
   fi
 
@@ -70,19 +70,19 @@ rustup target add x86_64-unknown-none
 # Install bazelisk/bazel.
 if ! command -v bazelisk >/dev/null 2>&1; then
   bazelisk_exe="/tmp/bazelisk$$"
-  download_and_verify_hash \
+  download_and_verify \
     https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
     "${bazelisk_exe}" \
     d28b588ac0916abd6bf02defb5433f6eddf7cba35ffa808eabb65a44aab226f7
-  mv "${bazelisk_exe}" "${INSTALL_PREFIX}/bin/bazelisk"
-  chmod +x "${INSTALL_PREFIX}/bin/bazelisk"
+  sudo mv "${bazelisk_exe}" "${INSTALL_PREFIX}/bin/bazelisk"
+  sudo chmod +x "${INSTALL_PREFIX}/bin/bazelisk"
 fi
 
 # Install protobuf-compiler following instructions from
 # https://google.github.io/proto-lens/installing-protoc.html.
 if ! command -v protoc >/dev/null 2>&1; then
   protoc_zip="/tmp/protoc$$.zip"
-  download_and_verify_hash \
+  download_and_verify \
     https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip \
     "${protoc_zip}" \
     78ab9c3288919bdaa6cfcec6127a04813cf8a0ce406afa625e48e816abee2878
@@ -91,16 +91,16 @@ if ! command -v protoc >/dev/null 2>&1; then
   rm "${protoc_zip}"
 fi
 
-#if [ -n "${GITHUB_ACTION}" ]; then
+if [ -n "${GITHUB_ACTION}" ]; then
   # Solves the following error when running on GitHub Actions:
   #
   # fatal: detected dubious ownership in repository at '/workspace'
   #   To add an exception for this directory, call:
   #   git config --global --add safe.directory /workspace
-  # git config --global --add safe.directory /workspace
+  git config --global --add safe.directory /workspace
   # echo "Added /workspace to git config's safe.directory."
 
   # GitHub Actions must clone submodules explicitly.
   #git submodule update --init
   #echo "Updated submodules."
-#fi
+fi
