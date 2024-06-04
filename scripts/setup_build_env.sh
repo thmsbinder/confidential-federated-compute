@@ -97,7 +97,7 @@ rustup target add x86_64-unknown-none
 #   export PATH="${INSTALL_PREFIX}/bin:${PATH}"
 # fi
 
-if [ -n "${GITHUB_ACTION}" ]; then
+#if [ -n "${GITHUB_ACTION}" ]; then
   # Solves the following error when running on GitHub Actions:
   #
   # fatal: detected dubious ownership in repository at '/workspace'
@@ -109,4 +109,4 @@ if [ -n "${GITHUB_ACTION}" ]; then
   # GitHub Actions must clone submodules explicitly.
   #git submodule update --init
   #echo "Updated submodules."
-fi
+#fi
