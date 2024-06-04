@@ -107,6 +107,6 @@ if [ -n "${GITHUB_ACTION}" ]; then
   echo "Added /workspace to git config's safe.directory."
 
   # GitHub Actions must clone submodules explicitly.
-  git submodule update --init
-  echo "Updated submodules."
+  #git submodule update --init
+  #echo "Updated submodules."
 fi
