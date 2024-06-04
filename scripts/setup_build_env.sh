@@ -18,7 +18,6 @@
 # Meant to be used with the official rust container as a starting point.
 set -o xtrace
 set -o errexit
-set -o nounset
 set -o pipefail
 
 # Download a artifact and verify its hash against an expected value.
@@ -87,7 +86,7 @@ if ! command -v protoc >/dev/null 2>&1; then
   rm "/tmp/protoc.zip"
 fi
 
-if [[ -v GITHUB_ACTION ]]; then
+if [ -n "${GITHUB_ACTION}" ]; then
   # Solves the following error when running on GitHub Actions:
   #
   # fatal: detected dubious ownership in repository at '/workspace'
