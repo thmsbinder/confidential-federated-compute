@@ -48,8 +48,10 @@ jobs:
       - name: Mount main branch
         uses: actions/checkout@v4
 
-      - name: Install protoc
+      - name: Configure Rust
         run: |
+          rustup default nightly-2023-11-15
+          rustup target add x86_64-unknown-none
           sudo apt-get update
           sudo apt-get install protobuf-compiler
 
