@@ -81,7 +81,7 @@ jobs:
           set -o nounset
           set -o pipefail
           source ${{ matrix.buildconfig }}
-          exec "${BUILD_COMMAND[@]}"
+          "${BUILD_COMMAND[@]}"
 
       - name: Show build artifacts
         run: |
