@@ -80,8 +80,8 @@ jobs:
           set -o nounset
           set -o pipefail
           source ${{ matrix.buildconfig }}
-          export RUST_BACKTRACE=1
-          eval "${BUILD_COMMAND[@]}"
+          scripts/docker_pull.sh
+          scripts/docker_run.sh "${BUILD_COMMAND[@]}"
 
       - name: Show build artifacts
         run: |
