@@ -80,8 +80,7 @@ jobs:
           set -o nounset
           set -o pipefail
           source ${{ matrix.buildconfig }}
-          scripts/docker_pull.sh
-          scripts/docker_run.sh "${BUILD_COMMAND[@]}"
+          eval "${BUILD_COMMAND[@]}"
 
       - name: Show build artifacts
         run: |

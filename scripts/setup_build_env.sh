@@ -21,7 +21,6 @@ set -o errexit
 set -o pipefail
 
 readonly INSTALL_PREFIX="/usr/local"
-sudo mkdir --parents "${INSTALL_PREFIX}/{bin,include}"
 
 # Download a artifact and verify its hash against an expected value.
 download_and_verify() {
@@ -74,8 +73,8 @@ if ! command -v bazelisk >/dev/null 2>&1; then
     https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
     "${bazelisk_exe}" \
     d28b588ac0916abd6bf02defb5433f6eddf7cba35ffa808eabb65a44aab226f7
-  sudo mv "${bazelisk_exe}" "${INSTALL_PREFIX}/bin/bazelisk"
-  sudo chmod +x "${INSTALL_PREFIX}/bin/bazelisk"
+  mv "${bazelisk_exe}" "${INSTALL_PREFIX}/bin/bazelisk"
+  chmod +x "${INSTALL_PREFIX}/bin/bazelisk"
 fi
 
 # Install protobuf-compiler following instructions from
@@ -86,8 +85,8 @@ if ! command -v protoc >/dev/null 2>&1; then
     https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip \
     "${protoc_zip}" \
     78ab9c3288919bdaa6cfcec6127a04813cf8a0ce406afa625e48e816abee2878
-  sudo unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" bin/protoc
-  sudo unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" 'include/*'
+  unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" bin/protoc
+  unzip -o "${protoc_zip}" -d "${INSTALL_PREFIX}" 'include/*'
   rm "${protoc_zip}"
 fi
 
@@ -98,9 +97,9 @@ if [ -n "${GITHUB_ACTION}" ]; then
   #   To add an exception for this directory, call:
   #   git config --global --add safe.directory /workspace
   git config --global --add safe.directory /workspace
-  # echo "Added /workspace to git config's safe.directory."
+  echo "Added /workspace to git config's safe.directory."
 
   # GitHub Actions must clone submodules explicitly.
-  #git submodule update --init
-  #echo "Updated submodules."
+  git submodule update --init
+  echo "Updated submodules."
 fi
