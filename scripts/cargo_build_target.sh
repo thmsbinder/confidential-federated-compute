@@ -17,8 +17,8 @@
 # Builds one or more cargo packages in release mode.
 set -ex
 
-# List of packages that will can built in release mode. Values passed as
-# positional arguments must be the keys here.
+# List of available cargo packages, along with the place where the artifact
+# will appear. Positional arguments are required to be in the key set.
 declare -Ar RELEASE_PACKAGES=(
   [ledger_enclave_app]=ledger/binary
   [square_enclave_app]=square_example/binary
@@ -55,8 +55,8 @@ build_docker_image
 
 # Build packages one at a time so that cargo doesn't merge features:
 # https://doc.rust-lang.org/nightly/cargo/reference/resolver.html#features.
-# Note: release builds unconditionally run with `--locked`, since
-# those should never update the lock file either.
+# Note: release builds are unconditionally `--locked`, since a lock file
+# update should not happen.
 docker run "${DOCKER_RUN_FLAGS[@]}" "${DOCKER_IMAGE_NAME}" bash -c \
     "set -x && \
     echo -n \"$packages\" \
