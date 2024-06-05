@@ -18,9 +18,6 @@
 # including building and testing all targets in the workspace.
 set -ex
 
-cd $(dirname -- "$0")/..
-source scripts/cargo_common.sh
-
 # List of packages that will can built in release mode. Values passed as
 # positional arguments must be the keys here.
 declare -Ar RELEASE_PACKAGES=(
@@ -28,6 +25,12 @@ declare -Ar RELEASE_PACKAGES=(
   [square_enclave_app]=square_example/binary
   [sum_enclave_app]=sum_example/binary
 )
+
+cd $(dirname -- "$0")/..
+source scripts/cargo_common.sh
+
+# Maybe this has been done before, so don't abort on failure.
+git submodule update --init || true
 
 declare -a packages
 
