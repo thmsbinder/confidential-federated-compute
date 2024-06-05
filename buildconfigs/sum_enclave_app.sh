@@ -9,13 +9,12 @@ export BUILD_COMMAND=(
   # GITHUB_ACTION=build
   # scripts/setup_build_env.sh
   # '&&'
-  cargo
-  build
-  --release
-  --package
+  scripts/cargo_build_target.sh
+  --output_dir
+  binaries
   sum_enclave_app
 )
 
 export SUBJECT_PATHS=(
-  target/x86_64-unknown-none/release/sum_enclave_app
+  binaries/sum_example/binary
 )

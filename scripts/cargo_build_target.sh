@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# A script that runs the portions of continuous integration that use cargo,
-# including building and testing all targets in the workspace.
+# Builds one or more cargo packages in release mode.
 set -ex
 
 # List of packages that will can built in release mode. Values passed as
@@ -26,11 +25,11 @@ declare -Ar RELEASE_PACKAGES=(
   [sum_enclave_app]=sum_example/binary
 )
 
-cd $(dirname -- "$0")/..
-source scripts/cargo_common.sh
-
 # Maybe this has been done before, so don't abort on failure.
 git submodule update --init || true
+
+cd $(dirname -- "$0")/..
+source scripts/cargo_common.sh
 
 declare -a packages
 
