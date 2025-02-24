@@ -3,6 +3,7 @@ name: Build and attest
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 # See https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#example-using-concurrency-to-cancel-any-in-progress-job-or-run
 concurrency:
