@@ -104,8 +104,3 @@ jobs:
           gcs_provenance_path="provenance/${GITHUB_SHA}/${package_name}/attestation.jsonl"
 
           gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-bins/${gcs_provenance_path}"
-
-          phash_path=$(mktemp)
-          sha256sum "${provenance_path}" | cut -d " " -f 1 > "${phash_path}"
-          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${hash}"
-          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
