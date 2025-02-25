@@ -18,14 +18,6 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_JSON }}
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          skip_install: true
       - name: Testit
         run: |
           set -euxo pipefail
@@ -36,8 +28,10 @@ jobs:
           phash_path=$(mktemp)
           phash=$(sha256sum "${provenance_path}" | cut -d " " -f 1)
           echo "${phash}" > "${phash_path}"
-          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${phash}"
-          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
+          cp "${provenance_path}" "/tmp/gs_oak-files_sha2-256:${phash}"
+          cp "${phash_path}" "/tmp/gs_oak-index_7_sha1:${GITHUB_SHA}_${package_name}"
+          ls -la /tmp/gs*
+          cat /tmp/gs*
 
   build:
     needs: test
