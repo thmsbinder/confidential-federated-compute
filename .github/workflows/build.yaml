@@ -11,7 +11,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-20.04
+
+    strategy:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_JSON }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          skip_install: true
+      - name: Testit
+        run: |
+          set -euxo pipefail
+          package_name=bla
+          provenance_path=$(mktemp)
+          echo hallo > "${provenance_path}"
+
+          phash_path=$(mktemp)
+          phash=$(sha256sum "${provenance_path}" | cut -d " " -f 1)
+          echo "${phash}" > "${phash_path}"
+          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${phash}"
+          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
+
   build:
+    needs: test
+
     outputs:
       binaries: ${{ steps.list-binaries.outputs.binaries }}
 
@@ -30,27 +60,9 @@ jobs:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
           repository-cache: true
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_JSON }}
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          skip_install: true
       - name: Build
         run: |
           set -euxo pipefail
-          package_name=bla
-          provenance_path=$(mktemp)
-          echo hallo > "${provenance_path}"
-
-          phash_path=$(mktemp)
-          phash=$(sha256sum "${provenance_path}" | cut -d " " -f 1)
-          echo "${phash}" > "${phash_path}"
-          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${phash}"
-          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
-
           bazelisk run -c opt --curses=no --noshow_progress //:install_release_binaries -- --destdir="${{ runner.temp }}/binaries"
       - name: List binaries
         id: list-binaries
@@ -94,10 +106,6 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: ${{ matrix.binary }}
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_JSON }}
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
