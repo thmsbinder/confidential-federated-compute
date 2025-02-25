@@ -33,9 +33,14 @@ jobs:
       - name: Build
         run: |
           set -euxo pipefail
-          echo "${{ github.workspace }}"
-          ls -la "${{ github.workspace }}"
-          ls -la "${{ github.workspace }}/scripts"
+          package_name=bla
+          provenance_path=$(mktemp)
+          echo hallo > "${provenance_path}"
+          phash_path=$(mktemp)
+          sha256sum "${provenance_path}" | cut -d " " -f 1 > "${phash_path}"
+          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${hash}"
+          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
+
           bazelisk run -c opt --curses=no --noshow_progress //:install_release_binaries -- --destdir="${{ runner.temp }}/binaries"
       - name: List binaries
         id: list-binaries
@@ -98,7 +103,7 @@ jobs:
 
           gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-bins/${gcs_provenance_path}"
 
-          "${{ github.workspace }}/scripts/publish.sh" \
-            "${provenance_path}" \
-            "sha1:${GITHUB_SHA}" \
-            "${package_name}"
+          phash_path=$(mktemp)
+          sha256sum "${provenance_path}" | cut -d " " -f 1 > "${phash_path}"
+          gcloud storage cp --no-clobber "${provenance_path}" "gs://oak-files/sha2-256:${hash}"
+          gcloud storage cp --no-clobber "${phash_path}" "gs://oak-index/7/sha1:${GITHUB_SHA}/${package_name}"
