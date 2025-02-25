@@ -33,9 +33,9 @@ jobs:
       - name: Build
         run: |
           set -euxo pipefail
-          echo "${{ github.workflow }}"
-          ls -la "${{ github.workflow }}"
-          ls -la "${{ github.workflow }}/scripts"
+          echo "${{ github.workspace }}"
+          ls -la "${{ github.workspace }}"
+          ls -la "${{ github.workspace }}/scripts"
           bazelisk run -c opt --curses=no --noshow_progress //:install_release_binaries -- --destdir="${{ runner.temp }}/binaries"
       - name: List binaries
         id: list-binaries
